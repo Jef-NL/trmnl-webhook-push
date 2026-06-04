@@ -1,3 +1,6 @@
+This is a FORK of https://github.com/gitstua/trmnl-sensor-push Disconnected to not break any existing TRMNL plugings using the original.
+Big shoutout to [gitstua](https://github.com/gitstua/)
+
 # TRMNL Sensor Push for Home Assistant
 
 This Home Assistant integration pushes state changes for entities tagged with "TRMNL" to your TRMNL webhook endpoint.
