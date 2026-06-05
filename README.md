@@ -1,4 +1,4 @@
-# TRMNL Sensor Push for Home Assistant
+# TRMNL Webhook Push for Home Assistant
 
 > **Push your Home Assistant entity states directly to your TRMNL display, privately, securely, and without any complex network setup.**
 
@@ -32,7 +32,7 @@ Think of it like your browser loading a webpage: you reach out to the server, bu
 
 1. Open HACS and add this repository as a **[Custom Repository](https://www.hacs.xyz/docs/faq/custom_repositories/)**:
    ```
-   https://github.com/Jef-NL/trmnl-sensor-push
+   https://github.com/Jef-NL/trmnl-webhook-push
    ```
    ![Add Custom Repository](./doc/custom_repo.png)
 
@@ -46,7 +46,7 @@ Think of it like your browser loading a webpage: you reach out to the server, bu
 
 ### Option B, Manual Installation
 
-1. Copy the `custom_components/trmnl_sensor_push` folder into your Home Assistant `custom_components` directory.
+1. Copy the `custom_components/trmnl_webhook_push` folder into your Home Assistant `custom_components` directory.
 2. **Restart Home Assistant.**
 
 ---
