@@ -53,7 +53,11 @@ def _ensure_trmnl_label(hass: HomeAssistant) -> None:
     )
 
     if existing is None:
-        registry.async_create(TRMNL_LABEL_NAME)
+        registry.async_create(
+            name=TRMNL_LABEL_NAME,
+            icon="mdi:cast-connected",
+            color="#f96527"
+            )
         _LOGGER.info("TRMNL: Created label '%s'", TRMNL_LABEL_NAME)
     else:
         _LOGGER.debug("TRMNL: Label '%s' already exists, skipping creation", TRMNL_LABEL_NAME)
