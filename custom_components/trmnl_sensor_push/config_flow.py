@@ -45,9 +45,11 @@ async def validate_input(hass: HomeAssistant, data: dict[str, str]) -> dict[str,
         raise InvalidUrl
 
     session = async_get_clientsession(hass)
-    test_payload = {
-        "status": "connecting",
-        "message": "Home Assistant Config Flow Validation Handshake Test"
+    test_payload = { "merge_variables": 
+        {
+            "status": "connecting",
+            "message": "Hello from Home Assistant"
+        }
     }
 
     try:

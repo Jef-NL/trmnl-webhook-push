@@ -14,7 +14,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.template import Template
 
-from .const import MIN_TIME_BETWEEN_UPDATES
 from .payload import create_entity_payload
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,11 +22,12 @@ _LOGGER = logging.getLogger(__name__)
 class TRMNLCoordinator:
     """Manages the polling timer and webhook pushes for TRMNL."""
 
-    def __init__(self, hass: HomeAssistant, webhook_url: str) -> None:
+    def __init__(self, hass: HomeAssistant, webhook_url: str, update_interval: float) -> None:
         """Initialise the coordinator."""
         self._hass = hass
         self._webhook_url = webhook_url
         self._remove_timer = None
+        self._update_interval = update_interval
 
     # ------------------------------------------------------------------
     # Public API
@@ -37,12 +37,12 @@ class TRMNLCoordinator:
         """Start the coordinator: run an initial push and set up the timer."""
         _LOGGER.debug(
             "TRMNL: Setting up periodic timer for %d seconds",
-            MIN_TIME_BETWEEN_UPDATES,
+            self._update_interval,
         )
         self._remove_timer = async_track_time_interval(
             self._hass,
             self._async_push,
-            timedelta(seconds=MIN_TIME_BETWEEN_UPDATES),
+            timedelta(seconds=self._update_interval),
         )
 
         _LOGGER.debug("TRMNL: Running initial entity push")

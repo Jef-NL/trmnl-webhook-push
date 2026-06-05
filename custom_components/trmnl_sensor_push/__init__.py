@@ -7,7 +7,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_URL, CONF_INTERVAL
 from .coordinator import TRMNLCoordinator
 from .label import ensure_trmnl_label
 
@@ -28,14 +28,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("TRMNL: Setting up config entry")
     hass.data.setdefault(DOMAIN, {})
 
-    url = entry.data["url"]
-    _LOGGER.debug("TRMNL: Using webhook URL: %s", url)
+    url = entry.data[CONF_URL]
+    interval = entry.data[CONF_INTERVAL]
+    interval_sec = interval * 60.0
+    _LOGGER.debug("TRMNL: Using webhook URL: %s pushing every %s min", url, interval)
 
     # Ensure the TRMNL label exists in the label registry
     ensure_trmnl_label(hass)
 
     # Create and start the coordinator
-    coordinator = TRMNLCoordinator(hass, url)
+    coordinator = TRMNLCoordinator(hass, url, interval_sec)
     await coordinator.async_start()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
