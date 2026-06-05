@@ -74,10 +74,10 @@ class TRMNLCoordinator:
         entity_ids = self._get_trmnl_entities()
 
         if not entity_ids:
-            _LOGGER.error("TRMNL: No entities found with TRMNL label")
+            _LOGGER.info("TRMNL: No entities found with TRMNL label")
             return
 
-        _LOGGER.info("TRMNL: Found %d entities with TRMNL label", len(entity_ids))
+        _LOGGER.debug("TRMNL: Found %d entities with TRMNL label", len(entity_ids))
 
         entities_payload = []
         for entity_id in entity_ids:
