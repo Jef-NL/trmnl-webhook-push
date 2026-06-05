@@ -2,8 +2,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
-import asyncio
+from datetime import timedelta
 import aiohttp
 
 from homeassistant.config_entries import ConfigEntry
@@ -12,27 +11,53 @@ from homeassistant.core import HomeAssistant, callback
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.template import Template
+from homeassistant.helpers import label_registry as lr
 
-from .const import DOMAIN, MIN_TIME_BETWEEN_UPDATES
+from .const import DOMAIN, MIN_TIME_BETWEEN_UPDATES, TRMNL_LABEL_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
 # Since this integration only supports config entries, use this schema
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
+
 def create_entity_payload(state) -> dict:
     """Create the payload for a single entity."""
     payload = {
-        "state": state.state,
+        "name": state.attributes.get('friendly_name', state.entity_id),
+        "value": state.state,
+        "device_class": state.attributes.get('device_class', None),
+        "unit_of_measurement": state.attributes.get('unit_of_measurement', None),
+        "icon": state.attributes.get('icon', None),
+        "friendly_name": state.attributes.get('friendly_name', state.entity_id),
         "attributes": state.attributes
     }
     _LOGGER.debug("TRMNL: Created payload for %s: %s", state.entity_id, payload)
     return payload
 
+
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up the TRMNL Entity Push component."""
     _LOGGER.debug("TRMNL: Setting up TRMNL Entity Push component")
     return True
+
+
+def _ensure_trmnl_label(hass: HomeAssistant) -> None:
+    """Create the TRMNL label if it does not already exist."""
+    registry = lr.async_get(hass)
+
+    # Check if a label with the TRMNL name already exists
+    existing = next(
+        (label for label in registry.labels.values() if label.name == TRMNL_LABEL_NAME),
+        None,
+    )
+
+    if existing is None:
+        registry.async_create(TRMNL_LABEL_NAME)
+        _LOGGER.info("TRMNL: Created label '%s'", TRMNL_LABEL_NAME)
+    else:
+        _LOGGER.debug("TRMNL: Label '%s' already exists, skipping creation", TRMNL_LABEL_NAME)
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up TRMNL Entity Push from a config entry."""
@@ -42,6 +67,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     url = entry.data["url"]
     _LOGGER.debug("TRMNL: Using webhook URL: %s", url)
+
+    # Ensure the TRMNL label exists in the label registry
+    _ensure_trmnl_label(hass)
 
     def get_trmnl_entities():
         """Get entities with TRMNL label using template."""
@@ -82,7 +110,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 }
             }
             _LOGGER.debug("TRMNL: Preparing to send payload: %s", payload)
-            
+
             try:
                 async with aiohttp.ClientSession() as session:
                     _LOGGER.debug("TRMNL: Sending POST request to %s", url)
@@ -116,6 +144,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     _LOGGER.info("TRMNL: Integration setup completed for URL: %s", url)
     return True
+
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
