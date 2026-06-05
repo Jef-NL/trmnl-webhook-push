@@ -1,6 +1,14 @@
+"""Payload builder for the TRMNL Entity Push integration."""
+from __future__ import annotations
+
+import logging
+
+_LOGGER = logging.getLogger(__name__)
+
+
 def create_entity_payload(state) -> dict:
     """Create the payload for a single entity with filtered attributes."""
-    # Limited set of attributes to save on message size
+    # Define a strict whitelist of the specific attributes you want to keep
     allowed_attributes = ("friendly_name", "unit_of_measurement", "icon")
     
     # Extract only the keys that exist in the entity's current attributes
