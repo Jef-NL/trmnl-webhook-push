@@ -1,5 +1,5 @@
 
-This is the payload that will be sent to the Terminal Sensor Push API.
+This is the payload that will be sent to the Terminal webhook Push API.
 
 ```json
 payload = {

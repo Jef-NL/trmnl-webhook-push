@@ -7,7 +7,7 @@
 
 ## ✨ What Is This?
 
-**TRMNL Sensor Push** is a Home Assistant integration that periodically sends your selected entity states to your [TRMNL](https://trmnl.com) device. It's designed to work seamlessly with the **[Home Assistant Entity Cards \[Webhook\] Plugin](https://trmnl.com/recipes/324788)**, a beautifully simple way to display live sensor data, temperatures, lights, or anything else on your TRMNL e-ink screen.
+**TRMNL Webhook Push** is a Home Assistant integration that periodically sends your selected entity states to your [TRMNL](https://trmnl.com) device. It's designed to work seamlessly with the **[Home Assistant Entity Cards \[Webhook\] Plugin](https://trmnl.com/recipes/324788)**, a beautifully simple way to display live sensor data, temperatures, lights, or anything else on your TRMNL e-ink screen.
 
 [![Home Assistant Entity Cards [Webhook]](./doc/icon.png)](https://trmnl.com/recipes/324788)
 
