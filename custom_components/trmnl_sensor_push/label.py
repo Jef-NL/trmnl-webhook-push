@@ -12,7 +12,12 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def ensure_trmnl_label(hass: HomeAssistant) -> None:
-    """Create the TRMNL label in the registry if it does not already exist."""
+    """Create the TRMNL label in HA if it does not already exist.
+
+    This function is idempotent - safe to call on every startup.
+    It checks for an existing label by name before creating one,
+    so it will never create duplicates.
+    """
     registry = lr.async_get(hass)
 
     existing = next(
