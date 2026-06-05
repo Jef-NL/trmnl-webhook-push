@@ -6,12 +6,18 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import selector  # Added import
 
 from .const import DOMAIN, CONF_URL
 
+# Updated to use modern HA selectors instead of primitive 'str'
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_URL): str,
+        vol.Required(CONF_URL): selector.TextSelector(
+            selector.TextSelectorConfig(
+                type=selector.TextSelectorType.URL
+            )
+        ),
     }
 )
 
