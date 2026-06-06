@@ -5,9 +5,9 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/Jef-NL/trmnl-webhook-push",
-  "issue_tracker": "https://github.com/Jef-NL/trmnl-webhook-push/issues",
   "integration_type": "service",
   "iot_class": "cloud_push",
+  "issue_tracker": "https://github.com/Jef-NL/trmnl-webhook-push/issues",
   "requirements": [],
   "version": "1.0.0",
   "zeroconf": []
