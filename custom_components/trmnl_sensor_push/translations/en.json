@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Setup TRMNL Webhook Push",
+        "description": "Provide your TRMNL plugin webhook URL. Afterwards you can tag your Home Assistant entities to send. [How to tag your entities can be found Here]({docs_url}).",
+        "data": {
+          "webhook_url": "Webhook URL",
+          "publish_interval": "Publish Interval"
+        },
+        "data_description": {
+          "webhook_url": "The webhook URL. The URL can be found on the plugin settings page.",
+          "publish_interval": "How frequently data is pushed. TRMNL screens refresh at max every 15 minutes."
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "The format entered is not a valid URL. Ensure it starts with http:// or https://.",
+      "cannot_connect": "Failed to connect to the provided URL or server returned a bad code. Please verify the address and try again.",
+      "unknown": "An unexpected error occurred while setting up the flow."
+    }
+  }
+}

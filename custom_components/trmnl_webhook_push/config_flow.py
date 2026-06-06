@@ -37,6 +37,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
     }
 )
 
+
 async def validate_input(hass: HomeAssistant, data: dict[str, str]) -> dict[str, str]:
     """Validate the user input allows us to connect."""
     url = data[CONF_URL].strip()
@@ -45,7 +46,8 @@ async def validate_input(hass: HomeAssistant, data: dict[str, str]) -> dict[str,
         raise InvalidUrl
 
     session = async_get_clientsession(hass)
-    test_payload = { "merge_variables": 
+    test_payload = {
+        "merge_variables":
         {
             "status": "connecting",
             "message": "Hello from Home Assistant"
@@ -60,6 +62,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, str]) -> dict[str,
         raise CannotConnect
 
     return {"title": "TRMNL Entity Push"}
+
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for TRMNL Entity Push."""
@@ -89,10 +92,15 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=STEP_USER_DATA_SCHEMA,
             errors=errors,
+            description_placeholders={
+                "docs_url": "https://github.com/Jef-NL/trmnl-webhook-push"
+            },
         )
+
 
 class CannotConnect(HomeAssistantError):
     """Error to indicate we cannot connect."""
+
 
 class InvalidUrl(HomeAssistantError):
     """Error to indicate the URL format is malformed."""
