@@ -3,12 +3,13 @@ name: Validate with hassfest
 on:
   push:
   pull_request:
-  schedule:
-    - cron: "0 0 * * *"
+  # No need to have a runner spin up on a repro that should not see too much change
+  # schedule:
+  #   - cron: "0 0 * * *"
 
 jobs:
   validate:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: "actions/checkout@v3"
-      - uses: home-assistant/actions/hassfest@master 
+      - uses: "actions/checkout@v4"
+      - uses: "home-assistant/actions/hassfest@master"

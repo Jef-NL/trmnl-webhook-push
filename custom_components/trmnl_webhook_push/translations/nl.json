@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TRMNL Webhook Push Instellen",
+        "description": "Geef de webhook-URL van je TRMNL-plugin op. Daarna kun je Home Assistant-entiteiten taggen om te verzenden. [Hoe je entiteiten kunt taggen vind je hier]({docs_url}).",
+        "data": {
+          "webhook_url": "Webhook-URL",
+          "publish_interval": "Publicatie-interval"
+        },
+        "data_description": {
+          "webhook_url": "De webhook-URL. De URL is te vinden op de instellingenpagina van de TRMNL plugin.",
+          "publish_interval": "Hoe vaak gegevens worden gepusht. TRMNL-schermen verversen maximaal elke 15 minuten."
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Het ingevoerde formaat is geen geldige URL. Zorg ervoor dat deze begint met http:// of https://.",
+      "cannot_connect": "Verbinding met de opgegeven URL is mislukt of de server heeft een foute code geretourneerd. Controleer het adres en probeer het opnieuw.",
+      "unknown": "Er is een onverwachte fout opgetreden bij het doorlopen van de configuratie."
+    }
+  }
+}
