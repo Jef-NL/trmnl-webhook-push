@@ -11,9 +11,6 @@
         "data_description": {
           "webhook_url": "The webhook URL. The URL can be found on the plugin settings page.",
           "publish_interval": "How frequently data is pushed. TRMNL screens refresh at max every 15 minutes."
-        },
-        "placeholder": {
-          "webhook_url": "https://trmnl.com/api/custom_plugins/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         }
       }
     },
