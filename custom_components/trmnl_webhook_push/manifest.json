@@ -1,9 +1,13 @@
 {
   "domain": "trmnl_webhook_push",
   "name": "TRMNL Entity Push",
-  "codeowners": ["@Jef-NL"],
+  "codeowners": [
+    "@Jef-NL"
+  ],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": [
+    "recorder"
+  ],
   "documentation": "https://github.com/Jef-NL/trmnl-webhook-push",
   "integration_type": "service",
   "iot_class": "cloud_push",
@@ -11,4 +15,4 @@
   "requirements": [],
   "version": "1.0.0",
   "zeroconf": []
-} 
+}
