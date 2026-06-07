@@ -12,10 +12,10 @@ import aiohttp
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.event import async_track_time_interval
-from homeassistant.helpers.template import Template
 import homeassistant.util.dt as dt_util
 from homeassistant.components.recorder import history
 
+from .label import get_labelled_entities
 from .payload import create_entity_payload, create_history_payload
 
 _LOGGER = logging.getLogger(__name__)
@@ -60,57 +60,59 @@ class TRMNLCoordinator:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
-
-    def _get_trmnl_entities(self) -> list[str]:
-        """Return entity IDs that carry the TRMNL label."""
-        _LOGGER.debug("TRMNL: Fetching entities with TRMNL label")
-        template = Template("{{ label_entities('TRMNL') }}", self._hass)
-        result = template.async_render()
-        _LOGGER.debug("TRMNL: Template rendered result: %s", result)
-        return result
-
     async def _async_push(self, *_) -> None:
         """Collect TRMNL-labelled entities and POST them to the webhook."""
         _LOGGER.debug("TRMNL: Starting entity processing")
+        trmnl_entities = get_labelled_entities(self._hass)
 
-        entity_ids = self._get_trmnl_entities()
-
-        if not entity_ids:
+        if not trmnl_entities:
             _LOGGER.info("TRMNL: No entities found with TRMNL label")
             return
+        _LOGGER.debug("TRMNL: Found %d entities with TRMNL label",
+                      len(trmnl_entities))
+        entity_ids = [e.entity_id for e in trmnl_entities]
 
-        _LOGGER.debug(
-            "TRMNL: Found %d entities with TRMNL label", len(entity_ids))
+        # Find the largest duration across all labelled entities
+        max_duration = max(
+            (e.trmnl_label.duration for e in trmnl_entities if e.trmnl_label.duration is not None),
+            # fallback for DEFAULT label (no duration)
+            default=None,
+        )
+        db_history = {}
+        if max_duration:
+            now = dt_util.now()
+            start_time = now - max_duration
+            _LOGGER.debug("TRMNL: Using history window of %s (from %s to %s)",
+                          max_duration, start_time, now)
 
-        # Calculate the 8-hour time window using HA's internal timezone utilities
-        now = dt_util.utcnow()
-        start_time = now - timedelta(hours=8)
-
-        # Query the Recorder database for all entity histories in a single batch
-        try:
-            _LOGGER.debug(
-                "TRMNL: Fetching 8-hour history from %s to %s", start_time, now)
-            db_history = await self._hass.async_add_executor_job(
-                history.get_significant_states,
-                self._hass,
-                start_time,
-                now,
-                entity_ids
-            )
-        except Exception as err:
-            _LOGGER.error(
-                "TRMNL: Failed to query recorder database for history: %s", err)
-            return
+            # Query the Recorder database for all entity histories in a single batch
+            try:
+                db_history = await self._hass.async_add_executor_job(
+                    history.get_significant_states,
+                    self._hass,
+                    start_time,
+                    now,
+                    entity_ids,
+                )
+            except Exception as err:
+                _LOGGER.error(
+                    "TRMNL: Failed to query recorder database for history: %s", err)
+                return
 
         entities_payload = []
-        for entity_id in entity_ids:
-            # Pull the history timeline array for this specific entity
+        for trmnl_entity in trmnl_entities:
+            entity_id = trmnl_entity.entity_id
+            label = trmnl_entity.trmnl_label
+
             state_list = db_history.get(entity_id, [])
-            history_data = create_history_payload(state_list, 8)
+            history_data = create_history_payload(state_list, label)
 
             state = self._hass.states.get(entity_id)
             if state:
-                _LOGGER.debug("TRMNL: Processing entity: %s", entity_id)
+                _LOGGER.debug(
+                    "TRMNL: Processing entity '%s' with label %s",
+                    entity_id, label.name,
+                )
                 entities_payload.append(
                     create_entity_payload(state, history_data))
 
@@ -129,15 +131,10 @@ class TRMNLCoordinator:
                     if response.status == 200:
                         _LOGGER.info(
                             "TRMNL: Successfully sent data to webhook")
-                        _LOGGER.debug(
-                            "TRMNL: Webhook response: %s", await response.text()
-                        )
+                        _LOGGER.debug("TRMNL: Webhook response: %s", await response.text())
                     else:
                         _LOGGER.error(
-                            "TRMNL: Error sending to webhook: %s", response.status
-                        )
-                        _LOGGER.error(
-                            "TRMNL: Response: %s", await response.text()
-                        )
+                            "TRMNL: Error sending to webhook: %s", response.status)
+                        _LOGGER.error("TRMNL: Response: %s", await response.text())
         except Exception as err:  # noqa: BLE001
             _LOGGER.error("TRMNL: Failed to send data to webhook: %s", err)
